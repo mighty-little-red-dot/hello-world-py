@@ -1,1 +1,533 @@
-   <h1>Hello Leopard</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0d24">
+<title>Midnight Around the World</title>
+<meta name="description" content="A live countdown to the next New Year and a timeline of how 17 places around the world celebrate it, from Kiribati to Baker Island.">
+<style>
+  :root{
+    --night:#0a0d24;
+    --indigo:#1b1f4f;
+    --gold:#f5c76b;
+    --champagne:#fff1d0;
+    --coral:#ff7a6b;
+    --ice:#8fd3ff;
+    --text:#f3efe6;
+    --muted:#a9acd0;
+    --line:rgba(245,199,107,.22);
+    --display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --body:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    min-height:100vh;
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.55;
+    background:
+      radial-gradient(1100px 700px at 12% -8%,#2b2370 0%,transparent 60%),
+      radial-gradient(900px 600px at 100% 8%,#5a1d4d 0%,transparent 55%),
+      linear-gradient(180deg,#0a0d24 0%,#0d1233 55%,#0a0d24 100%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+
+  /* Background layers */
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .stars i{
+    position:absolute;width:var(--s);height:var(--s);border-radius:50%;
+    background:#fff;opacity:.15;animation:twinkle var(--d) ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.12;transform:scale(.8)}50%{opacity:.9;transform:scale(1.25)}}
+  #fx{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  main,footer{position:relative;z-index:2}
+
+  /* Hero */
+  .hero{
+    position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(2rem,6vw,5rem) clamp(1.25rem,6vw,5rem);
+    max-width:1100px;margin:0 auto;
+  }
+  .hero h1{
+    font-family:var(--display);font-weight:400;
+    font-size:clamp(2.4rem,7vw,5.2rem);line-height:1.05;letter-spacing:-.01em;
+    color:var(--champagne);
+  }
+  .hero h1 .year{
+    font-style:italic;
+    background:linear-gradient(100deg,var(--gold),#fff6dc 40%,var(--coral) 70%,var(--gold));
+    background-size:250% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer 7s linear infinite;
+  }
+  @keyframes shimmer{to{background-position:-250% 0}}
+  .hero .lede{max-width:34rem;margin-top:1.2rem;color:var(--muted);font-size:1.08rem}
+  .zone{margin-top:.5rem;color:var(--muted);font-size:.92rem}
+
+  .clock{
+    margin-top:clamp(2rem,5vw,3.5rem);
+    display:flex;flex-wrap:wrap;gap:0;
+    transition:opacity .6s;
+  }
+  .unit{
+    padding:0 clamp(.8rem,3vw,2.2rem);
+    border-left:1px solid var(--line);
+    min-width:0;
+  }
+  .unit:first-child{padding-left:0;border-left:0}
+  .num{
+    display:block;
+    font-family:var(--display);
+    font-size:clamp(2.6rem,10vw,6.4rem);line-height:1;
+    font-variant-numeric:tabular-nums;
+    color:var(--champagne);
+  }
+  .num.tick{animation:tick .45s ease-out}
+  @keyframes tick{0%{transform:translateY(-14%);opacity:.3;color:var(--gold)}100%{transform:none;opacity:1}}
+  .lbl{display:block;margin-top:.45rem;color:var(--muted);font-size:.9rem}
+
+  .greet{
+    position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+    padding:0 1.25rem;text-align:center;pointer-events:none;opacity:0;
+    font-family:var(--display);font-size:clamp(2.6rem,11vw,8rem);line-height:1.02;
+    color:var(--champagne);text-shadow:0 0 40px rgba(245,199,107,.55);
+    transition:opacity .8s;
+  }
+  .greet em{display:block;color:var(--gold)}
+  body.celebrating .greet{opacity:1;animation:pulse 2.4s ease-in-out infinite}
+  body.celebrating .clock{opacity:.08}
+  @keyframes pulse{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.035)}}
+
+  .actions{margin-top:2.2rem;display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+  button,.link{
+    font:inherit;cursor:pointer;border-radius:999px;padding:.7rem 1.3rem;
+    border:1px solid var(--gold);background:transparent;color:var(--gold);
+    text-decoration:none;transition:background .2s,color .2s;
+  }
+  button.primary{background:var(--gold);color:#241a05;font-weight:600}
+  button:hover,.link:hover{background:rgba(245,199,107,.16)}
+  button.primary:hover{background:#ffd98a}
+  button:focus-visible,.link:focus-visible,a:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
+  .hint{margin-top:1rem;color:var(--muted);font-size:.9rem}
+
+  /* Wave progress */
+  .wave{max-width:1100px;margin:0 auto;padding:clamp(3rem,7vw,5rem) clamp(1.25rem,6vw,5rem) 1rem}
+  .wave h2,.timeline-head h2{
+    font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,4vw,2.6rem);
+    color:var(--champagne);line-height:1.15;
+  }
+  .wave p{margin-top:.6rem;color:var(--muted);max-width:38rem}
+  .bar{margin-top:1.4rem;height:6px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:6px;
+    background:linear-gradient(90deg,var(--ice),var(--gold),var(--coral));transition:width 1s}
+  .wave-text{margin-top:.7rem;color:var(--champagne);font-size:.98rem}
+
+  /* Timeline */
+  .timeline-wrap{max-width:1100px;margin:0 auto;padding:2rem clamp(1.25rem,6vw,5rem) 4rem}
+  .timeline-head p{margin-top:.5rem;color:var(--muted);max-width:40rem}
+  .timeline{list-style:none;margin-top:2.2rem;position:relative}
+  .row{
+    display:grid;grid-template-columns:9.5rem 3rem 1fr;gap:0 1rem;
+    padding-bottom:2.6rem;position:relative;
+  }
+  .row::before{ /* the rail */
+    content:"";position:absolute;left:calc(9.5rem + 1rem + 1.5rem - 1px);top:0;bottom:0;width:2px;
+    background:rgba(255,255,255,.12);
+  }
+  .row.passed::before{background:linear-gradient(var(--gold),rgba(245,199,107,.55))}
+  .mark{text-align:right;padding-top:.35rem;color:var(--muted);font-size:.9rem;line-height:1.35}
+  .mark b{display:block;color:var(--champagne);font-weight:600;font-size:1rem}
+  .mark small{display:block;opacity:.8}
+  .pin{
+    position:relative;z-index:1;width:3rem;height:3rem;border-radius:50%;
+    display:grid;place-items:center;font-size:1.35rem;
+    background:var(--night);border:2px solid rgba(255,255,255,.2);
+    transition:border-color .5s,box-shadow .5s;
+  }
+  .row.passed .pin{border-color:var(--gold);box-shadow:0 0 18px rgba(245,199,107,.45)}
+  .row.next .pin{border-color:var(--coral);animation:beacon 1.8s ease-out infinite}
+  @keyframes beacon{0%{box-shadow:0 0 0 0 rgba(255,122,107,.6)}100%{box-shadow:0 0 0 18px rgba(255,122,107,0)}}
+  .body{padding-top:.1rem;max-width:40rem}
+  .body h3{
+    font-family:var(--display);font-weight:400;font-size:1.7rem;line-height:1.15;color:var(--champagne);
+  }
+  .where{margin-top:.15rem;color:var(--muted);font-size:.92rem}
+  .where .cc{
+    display:inline-block;margin-right:.5rem;padding:0 .45rem;border:1px solid var(--line);
+    border-radius:4px;color:var(--gold);font-size:.8rem;
+  }
+  .status{margin-top:.6rem;font-weight:600;font-size:.95rem;color:var(--ice)}
+  .row.passed .status{color:var(--gold)}
+  .row.next .status{color:var(--coral)}
+  .body h4{margin-top:.9rem;font-size:1.02rem;font-weight:600;color:var(--champagne)}
+  .txt{margin-top:.25rem;color:#d4d5ea}
+  .there{margin-top:.6rem;color:var(--muted);font-size:.88rem}
+
+  /* "Now" marker between passed and upcoming rows */
+  .now{
+    list-style:none;display:flex;align-items:center;gap:1rem;
+    margin:0 0 2.2rem;color:var(--coral);font-weight:600;font-size:.95rem;
+  }
+  .now::before,.now::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--coral))}
+  .now::after{background:linear-gradient(90deg,var(--coral),transparent)}
+
+  footer{max-width:1100px;margin:0 auto;padding:0 clamp(1.25rem,6vw,5rem) 4rem;color:var(--muted);font-size:.9rem}
+  footer p+p{margin-top:.5rem}
+
+  @media (max-width:720px){
+    .row{grid-template-columns:3rem 1fr;gap:0 1rem}
+    .row::before{left:calc(1.5rem - 1px)}
+    .mark{grid-column:2;grid-row:1;text-align:left;padding:0 0 .6rem}
+    .mark b,.mark small{display:inline;margin-right:.4rem}
+    .pin{grid-column:1;grid-row:1 / span 2}
+    .body{grid-column:2;grid-row:2}
+    .unit{padding:0 .75rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars" aria-hidden="true"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<main>
+  <section class="hero" aria-labelledby="title">
+    <h1 id="title">Countdown to <span class="year" id="yr">2027</span></h1>
+    <p class="lede">Midnight does not arrive everywhere at once. It sweeps across the planet over 26 hours, and this page shows when it reaches you and everyone else.</p>
+    <p class="zone" id="zone"></p>
+
+    <div class="clock" id="clock" role="timer" aria-live="off">
+      <div class="unit"><span class="num" id="d">00</span><span class="lbl">days</span></div>
+      <div class="unit"><span class="num" id="h">00</span><span class="lbl">hours</span></div>
+      <div class="unit"><span class="num" id="m">00</span><span class="lbl">minutes</span></div>
+      <div class="unit"><span class="num" id="s">00</span><span class="lbl">seconds</span></div>
+    </div>
+    <div class="greet" id="greet" aria-live="polite">Happy New Year<em id="greetYear">2027</em></div>
+
+    <div class="actions">
+      <button class="primary" id="preview" type="button">Preview midnight</button>
+      <button id="reset" type="button">Back to real time</button>
+      <a class="link" href="#world">See the world timeline</a>
+    </div>
+    <p class="hint">Click anywhere on the page to launch a firework.</p>
+  </section>
+
+  <section class="wave" aria-labelledby="wave-title">
+    <h2 id="wave-title">The wave of midnight</h2>
+    <p>The first inhabited places to see the new year are in the Pacific. The last is an uninhabited island 26 hours later.</p>
+    <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+    <p class="wave-text" id="wavetext"></p>
+  </section>
+
+  <section class="timeline-wrap" id="world" aria-labelledby="tl-title">
+    <div class="timeline-head">
+      <h2 id="tl-title">How the world welcomes the year</h2>
+      <p>Listed in the order midnight arrives. The left column shows that moment in your own time zone.</p>
+    </div>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+</main>
+
+<footer>
+  <p>Times use the standard January UTC offset for each place. Some cultures also keep a separate new year on another date, such as Lunar New Year, Songkran or Matariki.</p>
+  <p>To add a place, add one line to the PLACES list in the script at the bottom of this file.</p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- Data: edit or extend this list ---------- */
+  // off = UTC offset in hours on 1 January. icon = emoji (flag emoji do not render on Windows).
+  const PLACES = [
+    {city:'Kiritimati', country:'Kiribati', cc:'KI', off:14, icon:'🌅',
+     title:'Among the first to greet the year',
+     text:'Kiritimati (Christmas Island) sits at UTC+14, so it reaches the new year before almost every other inhabited place. Island communities mark it with church services, shared meals and dancing.'},
+    {city:'Auckland', country:'New Zealand', cc:'NZ', off:13, icon:'🗼',
+     title:'Fireworks from the Sky Tower',
+     text:'Auckland launches fireworks from the Sky Tower at midnight, opening the big-city celebrations. The Māori new year, Matariki, is a separate midwinter festival in June or July.'},
+    {city:'Sydney', country:'Australia', cc:'AU', off:11, icon:'🎆',
+     title:'Harbour fireworks',
+     text:'Fireworks burst from the Harbour Bridge and barges across the harbour. There is a family show around 9 pm and the main show at midnight.'},
+    {city:'Tokyo', country:'Japan', cc:'JP', off:9, icon:'🔔',
+     title:'Joya no Kane, the 108 bells',
+     text:'Buddhist temples ring a bell 108 times, once for each worldly desire to be cleansed, with the last strike often after midnight. Families eat toshikoshi soba on New Year\'s Eve and osechi dishes in the days that follow.'},
+    {city:'Beijing', country:'China', cc:'CN', off:8, icon:'🧧',
+     title:'January 1 is quiet, Lunar New Year is the big one',
+     text:'January 1 is a public holiday, but the great festival is Lunar New Year in late January or February, with family reunion dinners, red envelopes and firecrackers.'},
+    {city:'Bangkok', country:'Thailand', cc:'TH', off:7, icon:'💦',
+     title:'Countdown crowds, then Songkran',
+     text:'Huge crowds gather at CentralWorld for the countdown. Traditional Thai New Year, Songkran, falls on 13 to 15 April and is celebrated with water splashing.'},
+    {city:'New Delhi', country:'India', cc:'IN', off:5.5, icon:'🪔',
+     title:'Many new years in one country',
+     text:'January 1 is marked with parties and gatherings. Many communities also keep their own new year on other dates, such as Ugadi, Vishu, Baisakhi and the Diwali period.'},
+    {city:'Dubai', country:'United Arab Emirates', cc:'AE', off:4, icon:'🏙️',
+     title:'Burj Khalifa light and fireworks show',
+     text:'Crowds fill Downtown Dubai to watch a synchronized light show and fireworks on and around the Burj Khalifa, the world\'s tallest building.'},
+    {city:'Moscow', country:'Russia', cc:'RU', off:3, icon:'🎄',
+     title:'Novy God, bigger than Christmas',
+     text:'Ded Moroz (Grandfather Frost) brings gifts, tables hold Olivier salad, and families watch the president\'s address followed by the chimes of the Kremlin clock.'},
+    {city:'Madrid', country:'Spain', cc:'ES', off:1, icon:'🍇',
+     title:'Twelve grapes at midnight',
+     text:'Crowds at Puerta del Sol eat one grape with each of the twelve clock chimes, a wish for luck in every month of the coming year.'},
+    {city:'Berlin', country:'Germany', cc:'DE', off:1, icon:'🥂',
+     title:'Silvester at the Brandenburg Gate',
+     text:'Berlin hosts a huge open-air party and fireworks at the Brandenburg Gate. Many households pour melted lead, wax or tin into water to read their fortune from the shapes.'},
+    {city:'London', country:'United Kingdom', cc:'GB', off:0, icon:'🕰️',
+     title:'Big Ben and Auld Lang Syne',
+     text:'Fireworks light up the Thames as Big Ben chimes midnight, and people link arms to sing Auld Lang Syne. In Scotland, Hogmanay brings the famous Edinburgh street party and first-footing, where the first visitor of the year brings a gift.'},
+    {city:'Rio de Janeiro', country:'Brazil', cc:'BR', off:-3, icon:'🌊',
+     title:'White clothes and seven waves',
+     text:'Millions gather on Copacabana beach dressed in white, jump seven waves for luck and leave offerings for Iemanjá, the sea goddess, as fireworks light the bay.'},
+    {city:'New York', country:'United States', cc:'US', off:-5, icon:'🎇',
+     title:'The Times Square ball drop',
+     text:'A crystal ball descends the pole above Times Square during the final minute of the year, watched live by a million people and a worldwide TV audience.'},
+    {city:'Mexico City', country:'Mexico', cc:'MX', off:-6, icon:'🧳',
+     title:'Grapes and an empty suitcase',
+     text:'Twelve grapes are eaten at midnight with a wish for each. Some people carry an empty suitcase around the block to invite travel in the new year.'},
+    {city:'Honolulu', country:'United States (Hawaii)', cc:'US', off:-10, icon:'🌺',
+     title:'Fireworks over the islands',
+     text:'Fireworks over Waikiki and in neighborhoods across the islands make Hawaii one of the last big celebrations of the night.'},
+    {city:'Baker Island', country:'US Minor Outlying Islands', cc:'UM', off:-12, icon:'🏝️',
+     title:'Last on Earth, with no one there',
+     text:'Baker Island sits at UTC-12, 26 hours behind Kiritimati. It is uninhabited, so it is the last place to reach the new year and the only one with no party at all.'}
+  ];
+  PLACES.sort((a,b)=>b.off-a.off);
+
+  /* ---------- Helpers ---------- */
+  const $ = s => document.querySelector(s);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rand = (a,b)=>a+Math.random()*(b-a);
+  const pad = n => String(n).padStart(2,'0');
+  const HOUR = 3600e3, DAY = 86400e3;
+
+  let shift = 0;                       // lets the "Preview midnight" button move the clock
+  const now = () => Date.now() + shift;
+  const nextNewYear = n => new Date(new Date(n).getFullYear()+1,0,1,0,0,0,0).getTime();
+
+  function fmtOffset(o){
+    const sign = o<0 ? '-' : '+', a = Math.abs(o), h = Math.floor(a), m = Math.round((a-h)*60);
+    return 'UTC'+sign+h+(m ? ':'+pad(m) : '');
+  }
+  function fmtDur(ms){
+    const s = Math.floor(ms/1000);
+    const d = Math.floor(s/86400), h = Math.floor(s%86400/3600), m = Math.floor(s%3600/60), sec = s%60;
+    if (d>0) return d+'d '+h+'h';
+    if (h>0) return h+'h '+pad(m)+'m';
+    return m+'m '+pad(sec)+'s';
+  }
+
+  /* ---------- Twinkling stars (CSS animated) ---------- */
+  (function(){
+    const box = $('#stars');
+    for (let i=0;i<110;i++){
+      const s = document.createElement('i');
+      s.style.left = rand(0,100)+'%';
+      s.style.top = rand(0,100)+'%';
+      s.style.setProperty('--s', rand(1,2.6).toFixed(1)+'px');
+      s.style.setProperty('--d', rand(2.5,6.5).toFixed(1)+'s');
+      s.style.animationDelay = rand(0,6).toFixed(1)+'s';
+      box.appendChild(s);
+    }
+  })();
+
+  /* ---------- Fireworks (canvas) ---------- */
+  const cv = $('#fx'), ctx = cv.getContext('2d');
+  let W=0, H=0, last=0, nextLaunch=0, celebrateUntil=0;
+  const rockets = [], sparks = [];
+  const PALETTE = [[245,199,107],[255,122,107],[143,211,255],[190,160,255],[130,255,170],[255,255,255]];
+
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W*dpr; cv.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function launch(){
+    rockets.push({
+      x: rand(W*.12, W*.88), y: H+10, ty: rand(H*.12, H*.5),
+      vx: rand(-.5,.5), vy: -rand(7,10.5),
+      c: PALETTE[(Math.random()*PALETTE.length)|0]
+    });
+  }
+  function explode(x,y,c){
+    const c2 = Math.random()<.35 ? PALETTE[(Math.random()*PALETTE.length)|0] : c;
+    const ring = Math.random()<.4, n = ring ? 70 : (60+Math.random()*50)|0;
+    for (let i=0;i<n;i++){
+      const a = ring ? i/n*Math.PI*2 : Math.random()*Math.PI*2;
+      const sp = ring ? 3.4 : Math.sqrt(Math.random())*rand(2,5.4);
+      sparks.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:rand(.009,.017),c:i%2?c:c2});
+    }
+    if (sparks.length>1800) sparks.splice(0, sparks.length-1800);
+  }
+  function frame(t){
+    const dt = Math.min((t-last)/16.67, 3); last = t;
+    ctx.clearRect(0,0,W,H);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+
+    if (t > nextLaunch){
+      const burst = t < celebrateUntil;
+      launch(); if (burst && Math.random()<.65) launch();
+      nextLaunch = t + (burst ? rand(110,300) : rand(1600,3600));
+    }
+    for (let i=rockets.length-1;i>=0;i--){
+      const r = rockets[i];
+      r.x += r.vx*dt; r.y += r.vy*dt;
+      ctx.strokeStyle = 'rgba('+r.c[0]+','+r.c[1]+','+r.c[2]+',.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(r.x-r.vx*4, r.y-r.vy*4); ctx.lineTo(r.x,r.y); ctx.stroke();
+      if (r.y <= r.ty){ explode(r.x,r.y,r.c); rockets.splice(i,1); }
+    }
+    for (let i=sparks.length-1;i>=0;i--){
+      const s = sparks[i];
+      s.vx *= Math.pow(.985,dt); s.vy = s.vy*Math.pow(.985,dt) + .045*dt;
+      s.x += s.vx*dt; s.y += s.vy*dt; s.life -= s.decay*dt;
+      if (s.life<=0){ sparks.splice(i,1); continue; }
+      ctx.strokeStyle = 'rgba('+s.c[0]+','+s.c[1]+','+s.c[2]+','+s.life.toFixed(2)+')';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(s.x-s.vx*1.6, s.y-s.vy*1.6); ctx.lineTo(s.x,s.y); ctx.stroke();
+    }
+    requestAnimationFrame(frame);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  if (!reduce){
+    requestAnimationFrame(t=>{ last=t; nextLaunch=t+600; requestAnimationFrame(frame); });
+    document.addEventListener('pointerdown', e=>{
+      if (e.target.closest('button,a')) return;
+      explode(e.clientX, e.clientY, PALETTE[(Math.random()*PALETTE.length)|0]);
+    });
+  }
+
+  /* ---------- Build the timeline ---------- */
+  const list = $('#timeline');
+  const marker = document.createElement('li');
+  marker.className = 'now';
+  marker.textContent = 'Midnight is here';
+  const rows = PLACES.map(p=>{
+    const li = document.createElement('li');
+    li.className = 'row';
+    li.innerHTML =
+      '<div class="mark"><b class="m-date"></b><span class="m-time"></span><small>your time</small></div>' +
+      '<div class="pin" aria-hidden="true">'+p.icon+'</div>' +
+      '<div class="body">' +
+        '<h3>'+p.city+'</h3>' +
+        '<p class="where"><span class="cc">'+p.cc+'</span>'+p.country+', '+fmtOffset(p.off)+'</p>' +
+        '<p class="status"></p>' +
+        '<h4>'+p.title+'</h4>' +
+        '<p class="txt">'+p.text+'</p>' +
+        '<p class="there"></p>' +
+      '</div>';
+    list.appendChild(li);
+    return {p, li,
+      date: li.querySelector('.m-date'), time: li.querySelector('.m-time'),
+      status: li.querySelector('.status'), there: li.querySelector('.there'), key:''};
+  });
+
+  /* Year the world is currently counting toward: stays on the old year until the last zone has passed. */
+  function referenceYear(n){
+    const y = new Date(n).getUTCFullYear();
+    return n < Date.UTC(y,0,1) + 12*HOUR ? y : y+1;
+  }
+
+  let lastPassed = -1;
+  function updateTimeline(n){
+    const ry = referenceYear(n);
+    let passed = 0;
+    rows.forEach(r=>{
+      r.m = Date.UTC(ry,0,1) - r.p.off*HOUR;
+      if (r.m <= n) passed++;
+    });
+    rows.forEach((r,i)=>{
+      const done = r.m <= n, isNext = i === passed;
+      r.li.classList.toggle('passed', done);
+      r.li.classList.toggle('next', isNext);
+      const key = ry+'|'+r.m;
+      if (r.key !== key){
+        const d = new Date(r.m);
+        r.date.textContent = d.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});
+        r.time.textContent = d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+        r.key = key;
+      }
+      r.status.textContent = done ? 'Welcomed '+ry+' '+fmtDur(n-r.m)+' ago'
+                                  : (isNext ? 'Next up, in ' : 'In ')+fmtDur(r.m-n);
+      const there = new Date(n + r.p.off*HOUR).toLocaleTimeString('en-GB',{timeZone:'UTC',hour:'2-digit',minute:'2-digit'});
+      r.there.textContent = 'Local time there right now: '+there;
+    });
+    if (passed !== lastPassed){
+      if (passed < rows.length) list.insertBefore(marker, rows[passed].li); else list.appendChild(marker);
+      lastPassed = passed;
+    }
+    $('#barfill').style.width = (passed/rows.length*100)+'%';
+    $('#wavetext').textContent = passed+' of '+rows.length+' places have already welcomed '+ry+'.';
+  }
+
+  /* ---------- Countdown ---------- */
+  const els = {d:$('#d'), h:$('#h'), m:$('#m'), s:$('#s')};
+  function setNum(el, v){
+    if (el.textContent !== v){
+      el.textContent = v;
+      if (!reduce){ el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); }
+    }
+  }
+
+  let target = nextNewYear(now());
+  let celebrateTimer = null;
+  function startCelebration(year){
+    $('#greetYear').textContent = year;
+    document.body.classList.add('celebrating');
+    celebrateUntil = performance.now() + 25000;
+    clearTimeout(celebrateTimer);
+    celebrateTimer = setTimeout(()=>document.body.classList.remove('celebrating'), 25000);
+  }
+  function setShift(v){
+    shift = v;
+    target = nextNewYear(now());
+    clearTimeout(celebrateTimer);
+    celebrateUntil = 0;
+    document.body.classList.remove('celebrating');
+    lastPassed = -1;
+    tick(true);
+  }
+
+  let timer = null;
+  function tick(manual){
+    clearTimeout(timer);
+    const n = now();
+    const t = nextNewYear(n);
+    if (t !== target){                   // local midnight just passed
+      if (t > target) startCelebration(new Date(n).getFullYear());
+      target = t;
+    }
+    const diff = Math.max(0, target - n);
+    setNum(els.d, pad(Math.floor(diff/DAY)));
+    setNum(els.h, pad(Math.floor(diff%DAY/HOUR)));
+    setNum(els.m, pad(Math.floor(diff%HOUR/60000)));
+    setNum(els.s, pad(Math.floor(diff%60000/1000)));
+    $('#yr').textContent = new Date(target).getFullYear();
+    updateTimeline(n);
+    timer = setTimeout(tick, 1000 - (Date.now()%1000) + 5);
+  }
+
+  /* ---------- Controls ---------- */
+  $('#zone').textContent = 'Counting down in your time zone: ' +
+    (Intl.DateTimeFormat().resolvedOptions().timeZone || 'local time');
+  $('#preview').addEventListener('click', ()=>{
+    setShift((target - Date.now()) - 10000);   // jump to 10 seconds before your local midnight
+    $('#greet').scrollIntoView({block:'center'});
+  });
+  $('#reset').addEventListener('click', ()=>setShift(0));
+
+  tick();
+})();
+</script>
+</body>
+</html>
